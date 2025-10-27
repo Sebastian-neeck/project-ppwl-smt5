@@ -10,18 +10,21 @@ class Listing extends Model
     use HasFactory;
 
     protected $fillable = [
-        'company',
-        'logo',
-        'email',
-        'website',
-        'location',
+        'user_id',
         'title',
         'tags',
-        'description'
+        'company',
+        'logo',
+        'location',
+        'email',
+        'website',
+        'description',
+        'status'
     ];
 
-    protected $casts = [
-        'tags' => 'array'
+    // Default values
+    protected $attributes = [
+        'status' => 'pending'
     ];
 
     public function scopeFilter($query, array $filters)
@@ -37,9 +40,52 @@ class Listing extends Model
         }
     }
 
+    // Scopes for status filtering
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
+    }
+
     // Relationship to User
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Relationship to Applications
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    public function applicationCount()
+    {
+        return $this->applications()->count();
+    }
+
+    // Helper methods
+    public function isPending()
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
+
+    public function isRejected()
+    {
+        return $this->status === 'rejected';
     }
 }

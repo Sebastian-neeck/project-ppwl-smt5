@@ -52,8 +52,20 @@ class User extends Authenticatable
         return $this->hasMany(Listing::class, 'user_id');
     }
 
+    // Relationship with Applications
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
     public function isAdmin()
     {
         return $this->is_admin == 1;
+    }
+
+    // Check if user has applied to a listing
+    public function hasApplied($listingId)
+    {
+        return $this->applications()->where('listing_id', $listingId)->exists();
     }
 }

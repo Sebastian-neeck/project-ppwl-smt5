@@ -45,12 +45,33 @@
                             <!-- Action Buttons -->
                             <div class="mt-auto">
                                 <div class="flex flex-wrap gap-4">
+                                    @auth
+                                        @if (!Auth::user()->is_admin)
+                                            @if (Auth::user()->hasApplied($listing->id))
+                                                <button disabled
+                                                        class="bg-green-500 text-white px-4 py-2 rounded-md flex items-center shadow-md opacity-75 cursor-not-allowed">
+                                                    <i class="fas fa-check mr-2"></i>Already Applied
+                                                </button>
+                                            @else
+                                                <a href="{{ route('applications.create', $listing) }}"
+                                                   class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center shadow-md transition duration-200">
+                                                    <i class="fas fa-paper-plane mr-2"></i>Apply Now
+                                                </a>
+                                            @endif
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}"
+                                           class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md flex items-center shadow-md transition duration-200">
+                                            <i class="fas fa-sign-in-alt mr-2"></i>Login to Apply
+                                        </a>
+                                    @endauth
+                                    
                                     <a href="mailto:{{ $listing->email }}"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center shadow-md transition duration-200">
+                                       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center shadow-md transition duration-200">
                                         <i class="fas fa-envelope mr-2"></i>Contact Employer
                                     </a>
-                                    <a href="{{ $listing->website }}"
-                                        class="border border-blue-500 text-blue-500 hover:bg-blue-50 px-4 py-2 rounded-md flex items-center shadow-md transition duration-200">
+                                    <a href="{{ $listing->website }}" target="_blank"
+                                       class="border border-blue-500 text-blue-500 hover:bg-blue-50 px-4 py-2 rounded-md flex items-center shadow-md transition duration-200">
                                         <i class="fas fa-globe mr-2"></i>Visit Website
                                     </a>
                                 </div>

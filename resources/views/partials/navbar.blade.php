@@ -24,12 +24,24 @@
             <div class="hidden md:flex md:items-center md:space-x-4">
                 <!-- Left Side -->
                 @auth
-                    <a href="{{ route('listings.index') }}"
-                        class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                        <i class="fa fa-list-alt mr-2"></i>Manage Listings
-                    </a>
+                    @if (!Auth::user()->is_admin)
+                        <!-- Menu untuk User Biasa -->
+                        <a href="{{ route('applications.my-applications') }}"
+                           class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-file-alt mr-2"></i>My Applications
+                        </a>
+                        <a href="{{ route('listings.create') }}"
+                           class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fa fa-plus-circle mr-2"></i>Post Job
+                        </a>
+                    @endif
 
                     @if (Auth::user()->is_admin)
+                        <!-- Admin menu -->
+                        <a href="{{ route('admin.listings.index') }}"
+                            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fa fa-list-alt mr-2"></i>Manage Listings
+                        </a>
                         <a href="{{ route('admin.users.index') }}"
                             class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-users mr-2"></i>Manage Users

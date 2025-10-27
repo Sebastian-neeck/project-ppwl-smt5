@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\UserListingController;
+use App\Http\Controllers\User\ApplicationController;
 use App\Http\Controllers\ListingController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,14 +23,18 @@ Route::post('register', [RegisterController::class, 'register']);
 
 // Authenticated User Routes
 Route::middleware('auth')->group(function () {
-    // Listings Routes
-    Route::prefix('listings')->name('listings.')->group(function () {
-        Route::get('/', [UserListingController::class, 'index'])->name('index');
-        Route::get('create', [UserListingController::class, 'create'])->name('create');
-        Route::post('/', [UserListingController::class, 'store'])->name('store');
-        Route::get('{listing}/edit', [UserListingController::class, 'edit'])->name('edit');
-        Route::put('{listing}', [UserListingController::class, 'update'])->name('update');
-        Route::delete('{listing}', [UserListingController::class, 'destroy'])->name('destroy');
+    // User hanya bisa create listing baru (tidak bisa manage/edit/delete)
+    Route::get('/listings/create', [UserListingController::class, 'create'])->name('listings.create');
+    Route::post('/listings', [UserListingController::class, 'store'])->name('listings.store');
+
+    // Application Routes untuk User
+    Route::prefix('applications')->name('applications.')->group(function () {
+        Route::get('/my-applications', [ApplicationController::class, 'myApplications'])->name('my-applications');
+        Route::get('{listing}/create', [ApplicationController::class, 'create'])->name('create');
+        Route::post('{listing}', [ApplicationController::class, 'store'])->name('store');
+        Route::get('{application}', [ApplicationController::class, 'show'])->name('show');
+        Route::get('{application}/download-resume', [ApplicationController::class, 'downloadResume'])->name('download-resume');
+        Route::delete('{application}', [ApplicationController::class, 'destroy'])->name('destroy');
     });
 
     // User Profile Routes
@@ -40,7 +45,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Public Listing Show Route
+// Public Listing Show Route - Only approved listings
 Route::get('/listings/{listing}', [ListingController::class, 'show'])
     ->where('listing', '[0-9]+')
     ->name('listings.show');
@@ -49,6 +54,15 @@ Route::get('/listings/{listing}', [ListingController::class, 'show'])
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Admin Listing Management Routes
+    Route::prefix('listings')->name('listings.')->group(function () {
+        Route::get('/', [AdminListingController::class, 'index'])->name('index');
+        Route::get('{listing}', [AdminListingController::class, 'show'])->name('show');
+        Route::post('{listing}/approve', [AdminListingController::class, 'approve'])->name('approve');
+        Route::post('{listing}/reject', [AdminListingController::class, 'reject'])->name('reject');
+        Route::delete('{listing}', [AdminListingController::class, 'destroy'])->name('destroy');
+    });
 
     // Admin User Management Routes
     Route::prefix('users')->name('users.')->group(function () {

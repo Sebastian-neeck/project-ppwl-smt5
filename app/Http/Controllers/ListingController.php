@@ -11,22 +11,25 @@ class ListingController extends Controller
     public function index()
     {
         $search = request('search');
-        $listings = Listing::latest()->filter(request(['tag', 'search']))->paginate(6);
+        
+        // Only show approved listings to public
+        $listings = Listing::where('status', 'approved')
+            ->latest()
+            ->filter(request(['tag', 'search']))
+            ->paginate(6);
 
         return view('listings.index', [
-            'listings' => $listings, // This should be the paginator instance
+            'listings' => $listings,
             'search' => $search
         ]);
     }
 
-
     // Display the specified resource
     public function show($id)
     {
-        // Find the listing by ID
-        $listing = Listing::findOrFail($id);
+        // Only show approved listings to public
+        $listing = Listing::where('status', 'approved')->findOrFail($id);
 
-        // Return a view with the listing
         return view('listings.show', compact('listing'));
     }
 }
