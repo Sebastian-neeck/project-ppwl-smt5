@@ -30,10 +30,7 @@
                            class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-file-alt mr-2"></i>My Applications
                         </a>
-                        <a href="{{ route('listings.create') }}"
-                           class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fa fa-plus-circle mr-2"></i>Post Job
-                        </a>
+                            
                     @endif
 
                     @if (Auth::user()->is_admin)

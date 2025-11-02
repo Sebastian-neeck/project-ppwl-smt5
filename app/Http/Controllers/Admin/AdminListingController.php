@@ -3,75 +3,124 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Application;
 use App\Models\Listing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminListingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $status = $request->get('status', 'all');
+        // Ambil semua applications dengan relasi user dan listing
+        $applications = Application::with(['user', 'listing'])
+            ->latest()
+            ->paginate(10);
         
-        $query = Listing::with('user');
-        
-        switch ($status) {
-            case 'pending':
-                $query->where('status', 'pending');
-                break;
-            case 'approved':
-                $query->where('status', 'approved');
-                break;
-            case 'rejected':
-                $query->where('status', 'rejected');
-                break;
+        return view('admin.listings.index', compact('applications'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view('admin.listings.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // Validasi data
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'company' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'email' => 'required|email',
+            'website' => 'nullable|url',
+            'tags' => 'required|string',
+            'description' => 'required|string',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Handle logo upload
+        $logoPath = null;
+        if ($request->hasFile('logo')) {
+            $logoPath = $request->file('logo')->store('logos', 'public');
         }
-        
-        $listings = $query->latest()->paginate(10);
-        
-        return view('admin.listings.index', compact('listings', 'status'));
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Listing $listing)
-    {
-        return view('admin.listings.show', compact('listing'));
-    }
-
-    /**
-     * Approve the specified listing.
-     */
-    public function approve(Listing $listing)
-    {
-        $listing->update(['status' => 'approved']);
+        // Create listing dengan status approved langsung (karena admin)
+        $listing = Listing::create([
+            'title' => $validated['title'],
+            'company' => $validated['company'],
+            'location' => $validated['location'],
+            'email' => $validated['email'],
+            'website' => $validated['website'],
+            'tags' => $validated['tags'],
+            'description' => $validated['description'],
+            'logo' => $logoPath,
+            'status' => 'approved', // Langsung approved karena dibuat admin
+            'user_id' => auth()->id(),
+        ]);
 
         return redirect()->route('admin.listings.index')
-            ->with('success', 'Listing approved successfully.');
+            ->with('success', 'Job listing created successfully!');
     }
 
     /**
-     * Reject the specified listing.
+     * Display the specified application.
      */
-    public function reject(Listing $listing)
+    public function showApplication(Application $application)
     {
-        $listing->update(['status' => 'rejected']);
-
-        return redirect()->route('admin.listings.index')
-            ->with('success', 'Listing rejected successfully.');
+        return view('admin.listings.application-show', compact('application'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Accept application
      */
-    public function destroy(Listing $listing)
+    public function acceptApplication(Application $application)
     {
-        $listing->delete();
+        $application->update([
+            'status' => 'accepted',
+            'admin_notes' => 'Application accepted by admin'
+        ]);
 
         return redirect()->route('admin.listings.index')
-            ->with('success', 'Listing deleted successfully.');
+            ->with('success', 'Application accepted successfully.');
+    }
+
+    /**
+     * Reject application
+     */
+    public function rejectApplication(Application $application)
+    {
+        $application->update([
+            'status' => 'rejected',
+            'admin_notes' => 'Application rejected by admin'
+        ]);
+
+        return redirect()->route('admin.listings.index')
+            ->with('success', 'Application rejected successfully.');
+    }
+
+    /**
+     * Delete application
+     */
+    public function destroyApplication(Application $application)
+    {
+        // Hapus file resume jika ada
+        if ($application->resume) {
+            Storage::disk('public')->delete($application->resume);
+        }
+
+        $application->delete();
+
+        return redirect()->route('admin.listings.index')
+            ->with('success', 'Application deleted successfully.');
     }
 }

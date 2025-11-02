@@ -27,6 +27,12 @@ class Listing extends Model
         'status' => 'pending'
     ];
 
+    // Casting untuk memastikan tipe data konsisten
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function scopeFilter($query, array $filters)
     {
         if ($filters['tag'] ?? false) {
@@ -36,7 +42,9 @@ class Listing extends Model
         if ($filters['search'] ?? false) {
             $query->where('title', 'like', '%' . request('search') . '%')
                 ->orWhere('description', 'like', '%' . request('search') . '%')
-                ->orWhere('tags', 'like', '%' . request('search') . '%');
+                ->orWhere('tags', 'like', '%' . request('search') . '%')
+                ->orWhere('company', 'like', '%' . request('search') . '%')
+                ->orWhere('location', 'like', '%' . request('search') . '%');
         }
     }
 
@@ -56,6 +64,12 @@ class Listing extends Model
         return $query->where('status', 'rejected');
     }
 
+    // Scope untuk listing yang aktif (approved)
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'approved');
+    }
+
     // Relationship to User
     public function user()
     {
@@ -68,9 +82,16 @@ class Listing extends Model
         return $this->hasMany(Application::class);
     }
 
+    // Count applications
     public function applicationCount()
     {
         return $this->applications()->count();
+    }
+
+    // Count pending applications
+    public function pendingApplicationsCount()
+    {
+        return $this->applications()->where('status', 'pending')->count();
     }
 
     // Helper methods
@@ -87,5 +108,18 @@ class Listing extends Model
     public function isRejected()
     {
         return $this->status === 'rejected';
+    }
+
+    // Check if user has applied to this listing
+    public function userHasApplied($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+        return $this->applications()->where('user_id', $userId)->exists();
+    }
+
+    // Get tags as array
+    public function getTagsArrayAttribute()
+    {
+        return array_map('trim', explode(',', $this->tags));
     }
 }

@@ -23,11 +23,11 @@ Route::post('register', [RegisterController::class, 'register']);
 
 // Authenticated User Routes
 Route::middleware('auth')->group(function () {
-    // User hanya bisa create listing baru (tidak bisa manage/edit/delete)
+    // User hanya bisa create listing baru
     Route::get('/listings/create', [UserListingController::class, 'create'])->name('listings.create');
     Route::post('/listings', [UserListingController::class, 'store'])->name('listings.store');
 
-    // Application Routes untuk User
+    // Application Routes untuk User (HANYA USER)
     Route::prefix('applications')->name('applications.')->group(function () {
         Route::get('/my-applications', [ApplicationController::class, 'myApplications'])->name('my-applications');
         Route::get('{listing}/create', [ApplicationController::class, 'create'])->name('create');
@@ -55,16 +55,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Admin Listing Management Routes
+    // ========== ADMIN APPLICATION MANAGEMENT ROUTES ==========
+    // Manage Applications (sekarang utama di listings)
     Route::prefix('listings')->name('listings.')->group(function () {
-        Route::get('/', [AdminListingController::class, 'index'])->name('index');
-        Route::get('{listing}', [AdminListingController::class, 'show'])->name('show');
-        Route::post('{listing}/approve', [AdminListingController::class, 'approve'])->name('approve');
-        Route::post('{listing}/reject', [AdminListingController::class, 'reject'])->name('reject');
-        Route::delete('{listing}', [AdminListingController::class, 'destroy'])->name('destroy');
+        Route::get('/', [AdminListingController::class, 'index'])->name('index'); // Sekarang menampilkan applications
+        Route::get('/create', [AdminListingController::class, 'create'])->name('create');
+        Route::post('/', [AdminListingController::class, 'store'])->name('store');
+        Route::get('applications/{application}', [AdminListingController::class, 'showApplication'])->name('application-show');
     });
 
-    // Admin User Management Routes
+    // ========== ADMIN APPLICATION ACTIONS ==========
+    Route::prefix('applications')->name('applications.')->group(function () {
+        Route::post('{application}/accept', [AdminListingController::class, 'acceptApplication'])->name('accept');
+        Route::post('{application}/reject', [AdminListingController::class, 'rejectApplication'])->name('reject');
+        Route::delete('{application}', [AdminListingController::class, 'destroyApplication'])->name('destroy');
+    });
+
+    // ========== ADMIN USER MANAGEMENT ROUTES ==========
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [AdminUserController::class, 'index'])->name('index');
         Route::get('{user}', [AdminUserController::class, 'show'])->name('show');

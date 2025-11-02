@@ -9,11 +9,13 @@
                     <!-- Gradient Header -->
                     <div class="bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-center p-8">
                         <h1 class="text-3xl font-semibold">Create Job Listing</h1>
+                        <p class="mt-2 opacity-90">Post a new job as administrator</p>
                     </div>
 
                     <!-- Form Section -->
                     <div class="p-6">
-                        <form action="/listings" method="POST" enctype="multipart/form-data">
+                        {{-- Update form action untuk admin --}}
+                        <form action="{{ route('admin.listings.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <!-- Company Section -->
@@ -34,7 +36,10 @@
                                         <label class="text-gray-700 font-medium">Company Name</label>
                                         <input type="text" name="company" placeholder="Enter your company name"
                                             class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                            value="{{ old('company') }}">
+                                            value="{{ old('company') }}" required>
+                                        @error('company')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                     <div class="flex flex-col">
                                         <label class="text-gray-700 font-medium">Company Logo</label>
@@ -42,6 +47,9 @@
                                             <input type="file" name="logo" accept="image/*"
                                                 class="p-2 border border-gray-300 rounded-md">
                                         </div>
+                                        @error('logo')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -64,19 +72,28 @@
                                         <label class="text-gray-700 font-medium">Email Address</label>
                                         <input type="email" name="email" placeholder="contact@company.com"
                                             class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                            value="{{ old('email') }}">
+                                            value="{{ old('email') }}" required>
+                                        @error('email')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                     <div>
                                         <label class="text-gray-700 font-medium">Company Website</label>
                                         <input type="url" name="website" placeholder="https://company.com"
                                             class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                                             value="{{ old('website') }}">
+                                        @error('website')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                     <div class="col-span-2">
                                         <label class="text-gray-700 font-medium">Location</label>
                                         <input type="text" name="location" placeholder="City, Country or Remote"
                                             class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                            value="{{ old('location') }}">
+                                            value="{{ old('location') }}" required>
+                                        @error('location')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -98,25 +115,39 @@
                                     <label class="text-gray-700 font-medium">Job Title</label>
                                     <input type="text" name="title" placeholder="e.g. Senior Software Engineer"
                                         class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                        value="{{ old('title') }}">
+                                        value="{{ old('title') }}" required>
+                                    @error('title')
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div class="mt-4">
                                     <label class="text-gray-700 font-medium">Skills & Tags</label>
                                     <input type="text" name="tags" placeholder="e.g. React, Node.js, Remote"
                                         class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                                        value="{{ old('tags') }}">
+                                        value="{{ old('tags') }}" required>
                                     <p class="text-gray-500 text-sm">Separate tags with commas</p>
+                                    @error('tags')
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div class="mt-4">
                                     <label class="text-gray-700 font-medium">Job Description</label>
                                     <textarea name="description" rows="6"
                                         placeholder="Describe the role, responsibilities, requirements, and benefits..."
-                                        class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">{{ old('description') }}</textarea>
+                                        class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                        required>{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
 
                             <!-- Submit Button -->
-                            <div class="text-center mt-6">
+                            <div class="text-center mt-6 flex justify-between">
+                                <a href="{{ route('admin.listings.index') }}" 
+                                   class="bg-gray-500 hover:bg-gray-600 text-white py-2 px-6 rounded-md font-semibold inline-flex items-center">
+                                    Cancel
+                                </a>
                                 <button type="submit"
                                     class="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-md font-semibold inline-flex items-center">
                                     Create Job Listing
