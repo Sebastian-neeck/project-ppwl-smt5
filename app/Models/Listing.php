@@ -9,18 +9,22 @@ class Listing extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'title',
-        'tags',
-        'company',
-        'logo',
-        'location',
-        'email',
-        'website',
-        'description',
-        'status'
-    ];
+    // app/Models/Listing.php
+protected $fillable = [
+    'user_id',
+    'title',
+    'tags',
+    'company',
+    'logo',
+    'location',
+    'email',
+    'phone', // ✅ tambah ini
+    'address', // ✅ tambah ini
+    'contact_person', // ✅ tambah ini
+    'website',
+    'description',
+    'status'
+];
 
     // Default values
     protected $attributes = [

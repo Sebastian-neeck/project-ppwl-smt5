@@ -78,6 +78,24 @@
                                         @enderror
                                     </div>
                                     <div>
+                                        <label class="text-gray-700 font-medium">Phone Number</label>
+                                        <input type="text" name="phone" placeholder="+62-21-1234-5678"
+                                            class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                            value="{{ old('phone') }}">
+                                        @error('phone')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label class="text-gray-700 font-medium">Contact Person</label>
+                                        <input type="text" name="contact_person" placeholder="Mr. John - HR Manager"
+                                            class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                            value="{{ old('contact_person') }}">
+                                        @error('contact_person')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div>
                                         <label class="text-gray-700 font-medium">Company Website</label>
                                         <input type="url" name="website" placeholder="https://company.com"
                                             class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -92,6 +110,14 @@
                                             class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                                             value="{{ old('location') }}" required>
                                         @error('location')
+                                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="text-gray-700 font-medium">Company Address</label>
+                                        <textarea name="address" rows="3" placeholder="Full company address"
+                                            class="mt-2 p-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500">{{ old('address') }}</textarea>
+                                        @error('address')
                                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                         @enderror
                                     </div>
