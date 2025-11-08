@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Listing;
-use App\Models\Application;
+use App\Models\Application; // ✅ TAMBAH INI
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             $this->command->info('Admin 2 already exists: babas@gmail.com');
         }
 
-        // Buat user regular untuk testing
+        // Buat user regular untuk testing (TANPA applications)
         $regularUser = User::where('email', 'user@example.com')->first();
         
         if (!$regularUser) {
@@ -146,30 +146,10 @@ class DatabaseSeeder extends Seeder
             $this->command->info('Listings already exist in database.');
         }
 
-        // Buat sample applications hanya jika belum ada
-        if (Application::count() === 0 && $regularUser) {
-            // Ambil beberapa approved listings untuk sample applications
-            $approvedListings = Listing::where('status', 'approved')->take(2)->get();
-            
-            foreach ($approvedListings as $listing) {
-                Application::create([
-                    'user_id' => $regularUser->id,
-                    'listing_id' => $listing->id,
-                    'cover_letter' => 'I am very interested in this position and believe my skills and experience make me a strong candidate. I have been working in this field for several years and have successfully completed similar projects. I am excited about the opportunity to contribute to your team and help achieve your company goals.',
-                    'resume' => 'resumes/sample_resume.pdf', // Placeholder path
-                    'status' => 'pending',
-                ]);
-            }
-
-            $this->command->info('Sample applications created successfully!');
-        } else {
-            $this->command->info('Applications already exist in database.');
-        }
-
         $this->command->info('=== DATABASE SEEDING COMPLETED ===');
         $this->command->info('Total users: ' . User::count());
         $this->command->info('Total listings: ' . Listing::count());
-        $this->command->info('Total applications: ' . Application::count());
+        $this->command->info('Total applications: ' . \App\Models\Application::count()); // ✅ PAKAI FULL NAMESPACE
         $this->command->info('Approved listings: ' . Listing::where('status', 'approved')->count());
         $this->command->info('Pending listings: ' . Listing::where('status', 'pending')->count());
         
@@ -178,5 +158,8 @@ class DatabaseSeeder extends Seeder
         $this->command->info('Admin 1: farahsyaz2105@gmail.com / 12345678');
         $this->command->info('Admin 2: babas@gmail.com / 12345678');
         $this->command->info('User: user@example.com / password');
+        $this->command->info('');
+        $this->command->info('=== NOTE ===');
+        $this->command->info('No sample applications created. Applications will appear when real users apply to jobs.');
     }
 }

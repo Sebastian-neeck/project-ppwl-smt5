@@ -18,6 +18,7 @@
         </div>
 
         <div class="p-6">
+            {{-- PASTIKAN: Cek $applications --}}
             @if($applications->isEmpty())
                 <div class="text-center py-12">
                     <i class="fas fa-file-alt text-5xl text-gray-300 mb-4"></i>
@@ -31,6 +32,7 @@
                 </div>
             @else
                 <div class="space-y-6">
+                    {{-- PASTIKAN: Loop $applications --}}
                     @foreach($applications as $application)
                         <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                             <div class="flex justify-between items-start">
@@ -78,7 +80,7 @@
                                     <!-- View Button -->
                                     <a href="{{ route('admin.listings.application-show', $application) }}" 
                                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium text-center flex items-center justify-center">
-                                        <i class="fas fa-eye mr-2"></i> View
+                                        <i class="fas fa-eye mr-2"></i> View Details
                                     </a>
 
                                     <!-- Accept/Reject Buttons -->
@@ -106,7 +108,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm font-medium" 
-                                                onclick="return confirm('Delete this application?')">
+                                                onclick="return confirm('Are you sure you want to delete this application?')">
                                             <i class="fas fa-trash mr-1"></i> Delete
                                         </button>
                                     </form>

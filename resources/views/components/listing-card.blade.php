@@ -44,7 +44,7 @@
 
         {{-- Action Buttons --}}
         <div class="flex flex-wrap gap-3 mt-5">
-            <a href="/listings/{{ $listing->id }}"
+            <a href="{{ route('listings.show', $listing) }}"
                 class="flex-1 inline-flex items-center justify-center bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
@@ -54,14 +54,51 @@
                 </svg>
                 View Details
             </a>
-            <a href="#"
-                class="flex-1 inline-flex items-center justify-center bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-                Apply Now
-            </a>
+            
+            {{-- ✅ PERBAIKAN: Tambahkan kondisi login --}}
+            @auth
+                @if(!auth()->user()->is_admin)
+                    {{-- User biasa bisa apply --}}
+                    @if(auth()->user()->hasApplied($listing->id))
+                        {{-- Sudah apply --}}
+                        <button disabled
+                                class="flex-1 inline-flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg opacity-75 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Applied
+                        </button>
+                    @else
+                        {{-- Belum apply --}}
+                        <a href="{{ route('applications.create', $listing) }}"
+                           class="flex-1 inline-flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                            Apply Now
+                        </a>
+                    @endif
+                @else
+                    {{-- Admin tidak bisa apply --}}
+                    <button disabled
+                            class="flex-1 inline-flex items-center justify-center bg-gray-400 text-white py-2 px-4 rounded-lg opacity-75 cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.12-1.933A6.014 6.014 0 0110 4.332c1.58 0 3.019.626 4.066 1.762a6.014 6.014 0 011.12 1.933 5.99 5.99 0 010 3.946 6.014 6.014 0 01-1.12 1.933A6.01 6.01 0 0110 15.668a6.01 6.01 0 01-4.066-1.762A6.014 6.014 0 014.332 12a5.99 5.99 0 010-3.973z" clip-rule="evenodd" />
+                        </svg>
+                        Admin
+                    </button>
+                @endif
+            @else
+                {{-- Guest harus login dulu --}}
+                <a href="{{ route('login') }}"
+                   class="flex-1 inline-flex items-center justify-center bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Login to Apply
+                </a>
+            @endauth
         </div>
 
         {{-- Posted Date --}}

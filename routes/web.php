@@ -27,11 +27,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/listings/create', [UserListingController::class, 'create'])->name('listings.create');
     Route::post('/listings', [UserListingController::class, 'store'])->name('listings.store');
 
-    // Application Routes untuk User (HANYA USER)
+    // Application Routes untuk User (HANYA USER) - UBAH URUTAN
     Route::prefix('applications')->name('applications.')->group(function () {
         Route::get('/my-applications', [ApplicationController::class, 'myApplications'])->name('my-applications');
+        
+        // ✅ TARUH ROUTE CREATE LEBIH DAHULU
         Route::get('{listing}/create', [ApplicationController::class, 'create'])->name('create');
+        
+        // ✅ ROUTE STORE
         Route::post('{listing}', [ApplicationController::class, 'store'])->name('store');
+        
+        // ✅ ROUTE LAINNYA
         Route::get('{application}', [ApplicationController::class, 'show'])->name('show');
         Route::get('{application}/download-resume', [ApplicationController::class, 'downloadResume'])->name('download-resume');
         Route::delete('{application}', [ApplicationController::class, 'destroy'])->name('destroy');
