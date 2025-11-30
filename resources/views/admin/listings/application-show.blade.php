@@ -64,19 +64,34 @@
                     </div>
                 </div>
 
-                <!-- Resume -->
+                <!-- Resume Section - ✅ PERBAIKAN: GUNAKAN ROUTE YANG BENAR -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Resume</h2>
                     <div class="bg-gray-50 rounded-lg p-4">
                         @if($application->resume)
-                            <a href="{{ Storage::disk('public')->url($application->resume) }}" 
-                               target="_blank" 
-                               class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium inline-flex items-center">
-                                <i class="fas fa-download mr-2"></i>
-                                Download Resume
-                            </a>
+                            <div class="flex flex-col space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <!-- ✅ PERBAIKAN: GUNAKAN ROUTE admin.listings.download-resume -->
+                                    <a href="{{ route('admin.listings.download-resume', $application) }}" 
+                                       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium inline-flex items-center transition duration-200">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Download Resume
+                                    </a>
+                                    <span class="text-sm text-gray-600 bg-white px-3 py-1 rounded border">
+                                        <i class="fas fa-file mr-1"></i>
+                                        {{ basename($application->resume) }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-gray-500">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    File akan didownload dengan nama: CV_{{ $application->user->name }}_{{ $application->listing->title }}.{{ pathinfo($application->resume, PATHINFO_EXTENSION) }}
+                                </p>
+                            </div>
                         @else
-                            <p class="text-gray-500">No resume uploaded</p>
+                            <p class="text-red-500 flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                No resume uploaded by the applicant.
+                            </p>
                         @endif
                     </div>
                 </div>

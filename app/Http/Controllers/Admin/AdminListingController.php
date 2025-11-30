@@ -81,6 +81,33 @@ class AdminListingController extends Controller
     }
 
     /**
+     * ✅ TAMBAHKAN METHOD downloadResume INI
+     * Download resume for admin
+     */
+    public function downloadResume(Application $application)
+    {
+        // Check if resume exists
+        if (!$application->resume) {
+            return redirect()->back()->with('error', 'No resume file found for this application.');
+        }
+
+        // Check if file exists in storage
+        if (!Storage::disk('public')->exists($application->resume)) {
+            return redirect()->back()->with('error', 'Resume file not found on server. Path: ' . $application->resume);
+        }
+
+        // Get file extension and create download name
+        $extension = pathinfo($application->resume, PATHINFO_EXTENSION);
+        $fileName = 'CV_' . $application->user->name . '_' . $application->listing->title . '.' . $extension;
+        
+        // Clean filename from special characters
+        $fileName = preg_replace('/[^A-Za-z0-9_.]/', '_', $fileName);
+
+        // Download the file
+        return Storage::disk('public')->download($application->resume, $fileName);
+    }
+
+    /**
      * Accept application
      */
     public function acceptApplication(Application $application)
@@ -114,7 +141,7 @@ class AdminListingController extends Controller
     public function destroyApplication(Application $application)
     {
         // Hapus file resume jika ada
-        if ($application->resume) {
+        if ($application->resume && Storage::disk('public')->exists($application->resume)) {
             Storage::disk('public')->delete($application->resume);
         }
 

@@ -68,6 +68,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/create', [AdminListingController::class, 'create'])->name('create');
         Route::post('/', [AdminListingController::class, 'store'])->name('store');
         Route::get('applications/{application}', [AdminListingController::class, 'showApplication'])->name('application-show');
+        // ✅ TAMBAHKAN ROUTE DOWNLOAD RESUME UNTUK ADMIN
+        Route::get('applications/{application}/download-resume', [AdminListingController::class, 'downloadResume'])->name('download-resume');
     });
 
     // ========== ADMIN APPLICATION ACTIONS ==========
