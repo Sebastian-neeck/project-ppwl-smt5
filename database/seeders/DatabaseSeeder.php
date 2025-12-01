@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Listing;
-use App\Models\Application; // ✅ TAMBAH INI
+use App\Models\Application;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -68,7 +68,7 @@ class DatabaseSeeder extends Seeder
                     'title' => 'Senior Laravel Developer',
                     'tags' => 'laravel,php,mysql',
                     'company' => 'Tech Solutions Inc',
-                    'logo' => null,
+                    'logo' => 'logos/tech-solutions.png', // ✅ LOGO PATH
                     'location' => 'Jakarta, Indonesia',
                     'email' => 'careers@techsolutions.com',
                     'website' => 'https://techsolutions.com',
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
                     'title' => 'Frontend Vue.js Developer',
                     'tags' => 'vue,javascript,frontend',
                     'company' => 'Digital Creative Agency',
-                    'logo' => null,
+                    'logo' => 'logos/digital-creative.png', // ✅ LOGO PATH
                     'location' => 'Bandung, Indonesia',
                     'email' => 'hr@digitalcreative.com',
                     'website' => 'https://digitalcreative.com',
@@ -92,31 +92,31 @@ class DatabaseSeeder extends Seeder
                     'title' => 'Full Stack Developer',
                     'tags' => 'nodejs,react,mongodb',
                     'company' => 'Startup XYZ',
-                    'logo' => null,
+                    'logo' => 'logos/startup-xyz.png', // ✅ LOGO PATH
                     'location' => 'Surabaya, Indonesia',
                     'email' => 'jobs@startupxyz.com',
                     'website' => 'https://startupxyz.com',
                     'description' => 'We need a full stack developer who can work with both frontend and backend technologies. Experience with MERN stack is a plus.',
-                    'status' => 'pending'
+                    'status' => 'approved'
                 ],
                 [
                     'user_id' => $admin2->id,
                     'title' => 'DevOps Engineer',
                     'tags' => 'aws,docker,kubernetes',
                     'company' => 'Cloud Services Co',
-                    'logo' => null,
+                    'logo' => 'logos/cloud-services.png', // ✅ LOGO PATH
                     'location' => 'Bali, Indonesia',
                     'email' => 'recruitment@cloudservices.com',
                     'website' => 'https://cloudservices.com',
                     'description' => 'Looking for DevOps engineer with experience in AWS, Docker, and Kubernetes. Must have CI/CD pipeline experience.',
-                    'status' => 'pending'
+                    'status' => 'approved'
                 ],
                 [
                     'user_id' => $admin1->id,
                     'title' => 'Mobile App Developer',
                     'tags' => 'flutter,dart,firebase',
                     'company' => 'App Innovations',
-                    'logo' => null,
+                    'logo' => 'logos/app-innovations.png', // ✅ LOGO PATH
                     'location' => 'Yogyakarta, Indonesia',
                     'email' => 'careers@appinnovations.com',
                     'website' => 'https://appinnovations.com',
@@ -128,12 +128,12 @@ class DatabaseSeeder extends Seeder
                     'title' => 'UI/UX Designer',
                     'tags' => 'figma,sketch,adobe-xd',
                     'company' => 'Creative Design Studio',
-                    'logo' => null,
+                    'logo' => 'logos/creative-design.png', // ✅ LOGO PATH
                     'location' => 'Medan, Indonesia',
                     'email' => 'hello@creativedesign.com',
                     'website' => 'https://creativedesign.com',
                     'description' => 'Looking for creative UI/UX designer with strong portfolio. Proficiency in Figma and design thinking process required.',
-                    'status' => 'pending'
+                    'status' => 'approved'
                 ]
             ];
 
@@ -141,17 +141,38 @@ class DatabaseSeeder extends Seeder
                 Listing::create($listingData);
             }
 
-            $this->command->info('Sample listings created successfully!');
+            $this->command->info('6 sample listings created successfully!');
+            $this->command->info('All jobs have logo paths and are approved.');
         } else {
-            $this->command->info('Listings already exist in database.');
+            $existingCount = Listing::count();
+            $this->command->info("Listings already exist in database. Total: {$existingCount}");
+            
+            // Update existing listings dengan logo path
+            $listingTitles = [
+                'Senior Laravel Developer' => 'logos/tech-solutions.png',
+                'Frontend Vue.js Developer' => 'logos/digital-creative.png',
+                'Full Stack Developer' => 'logos/startup-xyz.png',
+                'DevOps Engineer' => 'logos/cloud-services.png',
+                'Mobile App Developer' => 'logos/app-innovations.png',
+                'UI/UX Designer' => 'logos/creative-design.png',
+            ];
+            
+            foreach ($listingTitles as $title => $logoPath) {
+                $listing = Listing::where('title', $title)->first();
+                if ($listing) {
+                    $listing->update(['logo' => $logoPath]);
+                }
+            }
+            
+            $this->command->info('Updated existing listings with logo paths.');
         }
 
         $this->command->info('=== DATABASE SEEDING COMPLETED ===');
         $this->command->info('Total users: ' . User::count());
         $this->command->info('Total listings: ' . Listing::count());
-        $this->command->info('Total applications: ' . \App\Models\Application::count()); // ✅ PAKAI FULL NAMESPACE
+        $this->command->info('Total applications: ' . Application::count());
         $this->command->info('Approved listings: ' . Listing::where('status', 'approved')->count());
-        $this->command->info('Pending listings: ' . Listing::where('status', 'pending')->count());
+        $this->command->info('Listings with logo: ' . Listing::whereNotNull('logo')->count());
         
         $this->command->info('');
         $this->command->info('=== LOGIN CREDENTIALS ===');
@@ -160,6 +181,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('User: user@example.com / password');
         $this->command->info('');
         $this->command->info('=== NOTE ===');
-        $this->command->info('No sample applications created. Applications will appear when real users apply to jobs.');
+        $this->command->info('Logo paths have been added to all listings.');
+        $this->command->info('You need to add actual logo images to storage/app/public/logos/');
     }
 }

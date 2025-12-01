@@ -9,22 +9,21 @@ class Listing extends Model
 {
     use HasFactory;
 
-    // app/Models/Listing.php
-protected $fillable = [
-    'user_id',
-    'title',
-    'tags',
-    'company',
-    'logo',
-    'location',
-    'email',
-    'phone', // ✅ tambah ini
-    'address', // ✅ tambah ini
-    'contact_person', // ✅ tambah ini
-    'website',
-    'description',
-    'status'
-];
+    protected $fillable = [
+        'user_id',
+        'title',
+        'tags',
+        'company',
+        'logo',
+        'location',
+        'email',
+        'phone',
+        'address',
+        'contact_person',
+        'website',
+        'description',
+        'status'
+    ];
 
     // Default values
     protected $attributes = [
@@ -36,6 +35,30 @@ protected $fillable = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    // ✅ TAMBAHKAN ACCESSOR UNTUK LOGO URL
+    public function getLogoUrlAttribute()
+    {
+        if ($this->logo && \Storage::disk('public')->exists($this->logo)) {
+            return \Storage::disk('public')->url($this->logo);
+        }
+        
+        // Fallback ke placeholder atau company initial
+        return $this->getPlaceholderLogo();
+    }
+
+    // ✅ METHOD UNTUK PLACEHOLDER LOGO
+    protected function getPlaceholderLogo()
+    {
+        // Return placeholder image path atau generate initial
+        return asset('images/company-placeholder.png');
+    }
+
+    // ✅ TAMBAHKAN ACCESSOR UNTUK COMPANY INITIAL (jika mau pakai initial)
+    public function getCompanyInitialAttribute()
+    {
+        return strtoupper(substr($this->company, 0, 1));
+    }
 
     public function scopeFilter($query, array $filters)
     {
